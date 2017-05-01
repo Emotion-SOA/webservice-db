@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+    <!-- dataSource configuration -->
+    <bean id="dataSource"
+          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <property name="url" value="jdbc:mysql://localhost:3306/Emotion" />
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+    </bean>
+    <!-- Session Factory -->
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">true</prop>
+            </props>
+        </property>
+        <property name="mappingLocations">
+            <list>
+                <value>classpath:Post.hbm.xml</value>
+                <value>classpath:User.hbm.xml</value>
+            </list>
+        </property>
+    </bean>
+    <!-- DAO -->
+    <bean id="UserDao" class="emotion.dao.UserDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <bean id="PostDao" class="emotion.dao.PostDao">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+    <!-- Transaction Manager -->
+    <bean id="transactionManager"
+          class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <!-- to activate annotations in beans already registered in the ApplicationContext -->
+    <context:annotation-config />
+    <!-- scans packages to find and register beans within the application context -->
+    <context:component-scan base-package="emotion" />
+    <!-- turn on spring transaction annotation -->
+    <tx:annotation-driven transaction-manager="transactionManager" />
+    <!--<tx:advice id="txAdvice" transaction-manager="transactionManager">-->
+        <!--<tx:attributes>-->
+            <!--<tx:method name="get" read-only="true"/>-->
+            <!--<tx:method name="*" />-->
+        <!--</tx:attributes>-->
+    <!--</tx:advice>-->
+
+    <!--<aop:config>-->
+        <!--<aop:pointcut id="serviceOperationsPC"-->
+                      <!--expression="execution(* org.fazlan.employee.cxf.hibernate.service.services.IEmployeeService.*(..))"/>-->
+        <!--<aop:advisor advice-ref="txAdvice" pointcut-ref="serviceOperationsPC"/>-->
+    <!--</aop:config>-->
+</beans>
