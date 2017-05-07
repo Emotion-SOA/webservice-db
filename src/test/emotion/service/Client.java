@@ -17,7 +17,7 @@ public class Client {
 
     public void test() {
         Service service = Service.create(SERVICE_NAME);
-        String endpointAddress = "http://localhost:8080/emotion/services/DatabaseProcess";
+        String endpointAddress = "http://localhost:8080/emotion-webservice/services/DatabaseProcess";
         service.addPort(PORT_NAME, SOAPBinding.SOAP11HTTP_BINDING, endpointAddress);
         DatabaseProcess hw = service.getPort(DatabaseProcess.class);
         User user = hw.getUser("yeats.mar@gmail.com");
